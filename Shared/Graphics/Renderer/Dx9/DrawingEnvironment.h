@@ -1,0 +1,120 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2003-2005 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef zenic_win32_DrawingEnvironment_h
+#define zenic_win32_DrawingEnvironment_h
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// includes
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <Shared/Base/Types.h>
+#include <Shared/Base/Debug/Assert.h>
+
+#if defined(ZENIC_WIN32)
+#include <d3d9.h>
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// forwards
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct IDirect3DDevice9;
+
+namespace zenic
+{
+
+namespace win32
+{
+	class Texture;
+	class RenderTarget;
+	class Shader;
+}
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// class
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+
+namespace win32
+{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class DrawingEnvironment
+{
+public:
+
+	enum
+	{
+		RenderStates = 210,
+		RenderStateQueueSize = 32,
+		RenderTargets = 4,
+
+		TextureStages = 8,
+		TextureStageStates = 33,
+
+		Samplers = 16,
+		SamplerStates = 14,
+
+		Textures = 16
+	};
+
+	DrawingEnvironment();
+	~DrawingEnvironment();
+
+	void create( IDirect3DDevice9* device );
+	void destroy();
+
+	void setRenderState( uint state, u32 value );
+	void setFloatRenderState( uint state, f32 value );
+	u32 renderState( uint state );
+
+	void setTextureStageState( uint stage, uint state, u32 value );
+	u32 textureStageState( uint stage, uint state );
+
+	void setSamplerState( uint sampler, uint state, u32 value );
+	u32 samplerState( uint sampler, uint state );
+
+	void setRenderTarget( uint index, RenderTarget* target );
+	RenderTarget* renderTarget( uint index );
+
+	void setTexture( uint stage, Texture* texture );
+	Texture* texture( uint stage );
+
+private:
+
+	u32 m_renderStates[RenderStates];
+
+	u32 m_textureStages[TextureStages][TextureStageStates];
+	u32 m_samplers[Samplers][SamplerStates];
+
+	Texture* m_textures[Textures];
+	RenderTarget* m_renderTargets[RenderTargets];
+
+	IDirect3DDevice9* m_device;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "DrawingEnvironment.inl"
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+}
+
+}
+
+#endif

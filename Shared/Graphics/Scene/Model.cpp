@@ -1,0 +1,79 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2005 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "Model.h"
+
+#include <Shared/Base/Serialize/SerializableVersion.h>
+#include <Shared/Base/Serialize/Serializer.h>
+
+#include <Shared/Geometry/ModelData.h>
+#include <Shared/Graphics/Scene/BoneArray.h>
+
+#include <Shared/Base/Io/Log.h>
+
+
+#define ZENIC_UNCACHED_ACCELERATED(p) ((u8 *)((u32)p | 0x30000000))
+#define ZENIC_UNCACHED(p) ((u8 *)((u32)p | 0x20000000))
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+
+Model* Model::m_collectedModels[300];
+Model** Model::m_collectedModelsList = 0;
+uint Model::m_collectedModelsCount = 0;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ZENIC_CREATE_SERIALIZABLE_FACTORY(Model, SERIALIZABLE_ID('Z','N','I','C'), SERIALIZABLE_ID('M','O','D','L'))
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Model::~Model()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Model::resetCollectedModelCount()
+{
+	m_collectedModelsCount = 0;
+	m_collectedModelsList = reinterpret_cast<Model**>(&m_collectedModels);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Model::update(float time)
+{
+	Node::update(time);
+	ZENIC_ASSERT_DESC(m_collectedModelsCount < 300, "Maximum of 300 Models supported for now");
+	m_collectedModelsList[m_collectedModelsCount++] = this;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Model::serialize(Serializer& s)
+{
+	SerializableVersion version(0xc0cac01a, factory());
+
+	s << version;
+
+	Node::serialize(s);
+
+	s.descriptor("m_modelData") << m_modelData;
+	s.descriptor("m_boneArray") << m_boneArray;
+	s.descriptor("m_next") << m_next;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+}

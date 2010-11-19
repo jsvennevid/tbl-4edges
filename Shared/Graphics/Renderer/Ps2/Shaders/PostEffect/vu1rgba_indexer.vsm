@@ -1,0 +1,497 @@
+; VU1 micromode code by sparky
+
+	.global VUIndexPass_Begin
+	.global VUIndexPass_End
+
+POD_SZE 		= 3
+SRC_SZE 		= 40*3	; 120
+SPRIT_DST_SZE 	= 1 + (8*4+8*8)*4  ; 385
+FRAME_DST_SZE	= 4
+DST_SZE			= SPRIT_DST_SZE + FRAME_DST_SZE
+
+HALF_SZE		= DST_SZE + SRC_SZE + POD_SZE
+
+POD_PTR 		= 0
+SRC_PTR 		= POD_SZE
+DST_PTR 		= POD_SZE+SRC_SZE
+
+
+RED_AND_BLUE	= 1
+IS_ZBUF_CPY		= 2
+
+
+	.p2align 8
+	.vu
+VUIndexPass_Begin:
+	; jump table
+	NOP										B				IndexFetchInitRegs
+	NOP										NOP
+	
+	NOP										B				IndexFetch
+	NOP										NOP
+	
+
+;////////////////////////////////////////////////////////////////////////////////////////
+;////////////////////////////// handling of indexfetch //////////////////////////////////
+
+IndexFetch:
+	; pod1: [           GifTag            ]
+	; pod2: [FlagIn,  zvalue, num_pages, %]
+	; pod3: [OldFlag, Cpy_Bool,  %,		 %]
+
+	; VF31 will contain the GifTag
+
+
+	; Args are FlagIn and num_pages
+	NOP										XTOP			VI11
+	NOP										ILW.x			VI15, 1(VI11)			; FlagIn
+	NOP										ILW.x			VI14, 2(VI11)			; OldFlag
+	NOP										IBGEZ			VI15, got_attribs
+	NOP										NOP
+	NOP										SQ				VF01, 0(VI11)
+	NOP										SQ				VF02, 1(VI11)
+	NOP										MTIR			VI15, VF02x
+got_attribs:
+	NOP										LQ				VF31, 0(VI11)			; Get GifTag
+	NOP										ISW.x			VI15, 2(VI11)			; Set OldFlag to FlagIn
+	NOP										IADDIU		VI01, VI00, 1
+	NOP										IBEQ			VI14, VI15, setup_done
+	NOP										SQ				VF31, FRAME_DST_SZE(VI02)	; Set GifTag
+
+	NOP										B				SetupCurDstBuffer
+	NOP										ISW.y			VI01, 2(VI11)					; Set Cpy_Bool
+
+setup_done:
+
+	; src_ptr <-- XTOP + pod
+	;NOP										ILW.y			VI15, POD_PTR+0(VI11)	; fetch num_pages
+	;NOP										ILW.z			VI15, 1(VI11)	; fetch num_pages
+	NOP										XITOP			VI15				; fetch num_pages
+	NOP										IADDIU		VI04, VI11, SRC_PTR
+	NOP										IADD			VI14, VI15, VI15
+	NOP										IADD			VI15, VI14, VI15		; mul by 3
+	NOP										IADD			VI15, VI04, VI15		; end addr
+
+page_loop:
+	; // setup next page
+	NOP										LQI				VF01, (VI04++)			; Get first
+	NOP										LQI				VF02, (VI04++)			; Get second
+	NOP										LQI				VF03, (VI04++)			; Get third
+
+	NOP										SQ				VF01, 1(VI02)
+	NOP										SQ				VF02, 2(VI02)
+	NOP										SQ				VF03, 3(VI02)
+
+	; // kick page
+	NOP										XGKICK			VI02
+
+	; // toggle
+	NOP										ILW.y			VI01, 2(VI11)			; Get Cpy_Bool
+	NOP										IADDIU			VI14, VI00, DST_PTR
+	NOP										IADD			VI03, VI00, VI02
+	NOP										IBEQ			VI02, VI14, toggle_done
+	NOP										IADDIU			VI02, VI02, HALF_SZE
+	NOP										IADDIU			VI02, VI00, DST_PTR
+toggle_done:
+
+	; // see if dst buf 2 needs a gifstream
+	NOP										IBEQ			VI01, VI00, itteration_done
+	NOP										IADDIU			VI14, VI00, SPRIT_DST_SZE-1		; minus giftag
+
+	; // copy all data to next dstbuf
+	NOP										IADDIU			VI03, VI03, FRAME_DST_SZE+1		; offset by extra giftag
+	NOP										IADDIU			VI05, VI02, FRAME_DST_SZE+1
+	; qmemcpy(begDst+FRAME_DST_SZE+1, begDstOld+FRAME_DST_SZE+1, (8*4+8*8)*4 quads)
+
+cpy_loop:	; optimized for optimal gif access, interleaved vu1 mem access with non mem access instructions
+	NOP										ISUBIU			VI14, VI14, 2
+	NOP										LQI				VF01, (VI03++)
+	NOP										NOP
+	NOP										LQI				VF02, (VI03++)
+	NOP										NOP
+	NOP										SQI				VF01, (VI05++)
+	NOP										IBGTZ			VI14, cpy_loop	; even number of quads
+	NOP										SQI				VF02, (VI05++)
+cpy_loop_done:
+	NOP										ISW.y			VI00, 2(VI11)			; Cpy_Bool = false
+
+itteration_done:
+	NOP										IBNE			VI04, VI15, page_loop
+	NOP										SQ				VF31, FRAME_DST_SZE(VI02)	; Set GifTag
+
+; Backup information data
+	NOP										LQ				VF03, 2(VI11)
+	NOP										LQ				VF01, 0(VI11)
+	NOP										LQ				VF02, 1(VI11)
+	NOP										SQ				VF03, 2+512(VI11)
+	
+	NOP										NOP
+	NOP[e]									NOP
+	NOP										NOP
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SetupCurDstBuffer:
+	; VI15 is FlagIn
+	; VI11 is XTOP
+	; VI02 is dst_buffer
+	; VF31 is const GifTag
+
+
+
+	; We Make 
+	; VI03 is output area
+	; VI14 is uGreenAndAlpha_extended
+	; VI15 is uIsZBufCpy_extended
+	; RED_AND_BLUE		= 1
+	; IS_ZBUF_CPY		= 2
+
+	NOP										IADDIU			VI01, VI00, RED_AND_BLUE
+	NOP										IAND			VI13, VI01, VI15		;	bool bOdd=bRedAndBlue
+	NOP										ISUBIU			VI14, VI13, 1
+	NOP										IADDIU			VI01, VI00, IS_ZBUF_CPY
+	NOP										IAND			VI15, VI01, VI15
+	NOP										ISUB			VI15, VI00, VI15
+
+	; Generate horizontal data
+	NOP										B				genEvenCol
+	NOP										IADDIU			VI03, VI02, FRAME_DST_SZE+1
+genEvenCol_done:
+
+	NOP										B				genOddCol
+	NOP										NOP
+genOddCol_done:
+
+	; Start Y looping
+	NOP										LQ.y				VF26, 1(VI11)
+	NOP										MR32.x			VF26, VF26
+	NOP										MR32.w			VF26, VF26
+	NOP										IADDIU			VI09, VI00, 0		; clear y
+	NOP										IADDIU			VI10, VI00, 32		; clear y_stop
+	NOP										IADDIU			VI08, VI00, 16		; preload constant
+	NOP										MR32.z			VF26, VF26
+	NOP										MR32.z			VF28, VF26
+yloop_gen:
+	
+	NOP										IAND			VI07, VI09, VI08	;	x&0x10
+	NOP										IADD			VI07, VI07, VI07	;	<<= 1
+	NOP										ISUB			VI07, VI08, VI07	;	val = 16 - ((x&0x10)<<1)
+	NOP										IAND			VI07, VI15, VI07	;	&= uIsZBufCpy_extended
+	NOP										IADD			VI07, VI09, VI07	;	y1 = y + (val&uIsZBufCpy_extended)
+
+
+	; VI07 is y1 and VI09 is y
+	NOP										IADD			VI06, VI09, VI09	;	y*2
+	NOP										IADDIU			VI05, VI00, 2
+	NOP										IAND			VI05, VI14, VI05
+	NOP										IADD			VI05, VI05, VI06	;	V += (0x2&uGreenAndAlpha_extended)
+	NOP										IADDIU			VI06, VI05, 2		;	V2 = V + 2
+
+
+	SUB.w			VF26, VF00, VF00		MFIR.y			VF25, VI05
+	SUB.w			VF28, VF00, VF00		MFIR.y			VF26, VI07
+	ITOF0.y		VF25, VF25					IADDIU			VI07, VI07, 2		;	y2 = y1 + 2
+	ITOF0.y		VF26, VF26					MFIR.y			VF27, VI06
+	ITOF0.y		VF27, VF27					MFIR.y			VF28, VI07
+	ITOF0.y		VF28, VF28					LOI				0.5
+	ADDi.y		VF25, VF25, I				NOP
+	ADDi.y		VF27, VF27, I				NOP
+	FTOI4.y		VF25, VF25					NOP
+	FTOI4.y		VF26, VF26					NOP
+	FTOI4.y		VF27, VF27					NOP
+	FTOI4.y		VF28, VF28					NOP
+
+	; VF25-VF28  .y components
+
+	; pNeedXUs[index*8 + 1] = V;
+	; pNeedXUs[index*8 + 3] = (y1<<4);
+	; pNeedXUs[index*8 + 5] = V + 0x20;
+	; pNeedXUs[index*8 + 7] = ((y1+2)<<4);
+	
+	NOP										IBNE			VI13, VI00, store_evens
+	NOP										NOP
+store_evens_done:
+	NOP										IBEQ			VI13, VI00, store_odds
+	NOP										NOP
+store_odds_done:
+	
+	NOP										IADDIU			VI09, VI09, 2
+	NOP										IADDIU			VI01, VI00, 1
+	NOP										IADDIU			VI13, VI13, 1
+	NOP										IBNE			VI10, VI09, yloop_gen
+	NOP										IAND			VI13, VI01, VI13	; toggle bit
+
+	NOP										B				setup_done
+	NOP										NOP
+
+
+store_evens:
+	NOP										MOVE.x			VF25, VF01
+	NOP										MR32.x			VF26, VF01
+	NOP										MOVE.x			VF27, VF02
+	NOP										MR32.x			VF28, VF02
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF03
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF03
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF04
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF04
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF05
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF05
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF06
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF06
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF07
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF07
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF08
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF08
+	NOP										SQI				VF25, (VI03++)
+	NOP										SQI				VF26, (VI03++)
+	NOP										SQI				VF27, (VI03++)
+	NOP										B				store_evens_done
+	NOP										SQI				VF28, (VI03++)
+
+store_odds:
+	NOP										MOVE.x			VF25, VF09
+	NOP										MR32.x			VF26, VF09
+	NOP										MOVE.x			VF27, VF10
+	NOP										MR32.x			VF28, VF10
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF11
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF11
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF12
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF12
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF13
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF13
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF14
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF14
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF15
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF15
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF16
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF16
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF17
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF17
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF18
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF18
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF19
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF19
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF20
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF20
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF21
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF21
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF22
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF22
+	NOP										SQI				VF25, (VI03++)
+	NOP										MOVE.x			VF25, VF23
+	NOP										SQI				VF26, (VI03++)
+	NOP										MR32.x			VF26, VF23
+	NOP										SQI				VF27, (VI03++)
+	NOP										MOVE.x			VF27, VF24
+	NOP										SQI				VF28, (VI03++)
+	NOP										MR32.x			VF28, VF24
+	NOP										SQI				VF25, (VI03++)
+	NOP										SQI				VF26, (VI03++)
+	NOP										SQI				VF27, (VI03++)
+	NOP										B				store_odds_done
+	NOP										SQI				VF28, (VI03++)
+
+
+			;;;;;;;;;;;;;;;;;;;;;;;;;;;; generators
+genEvenCol:
+	NOP										IADDIU			VI09, VI00, 0		; clear x
+	NOP										IADDIU			VI10, VI00, 64		; clear x_stop
+	NOP										IADDIU			VI08, VI00, 32		; preload constant
+	NOP										IADD			VI05, VI00, VI03	; copy dst_buf
+xloop_gen1:
+
+	NOP										IAND			VI07, VI09, VI08	;	x&0x20
+	NOP										IADD			VI07, VI07, VI07	;	<<= 1
+	NOP										ISUB			VI07, VI08, VI07	;	val = 32 - ((x&0x20)<<1)
+	NOP										IAND			VI07, VI15, VI07	;	&= uIsZBufCpy_extended
+	NOP										IADD			VI07, VI09, VI07	;	x1 = x + (val&uIsZBufCpy_extended)
+
+
+	;										VI07 contains x1 and VI09 contains x
+	NOP										IADD			VI06, VI09, VI09	;	x*2
+	NOP										MFIR.x			VF29, VI06
+	NOP										MFIR.y			VF29, VI07
+	NOP										LOI				8.5
+	ITOF0.xy	VF29, VF29					MFIR.x			VF30, VI06
+	NOP										IADDIU			VI07, VI07, 16		;	x1+16
+	ADDi.x		VF29, VF29, I				MFIR.y			VF30, VI07
+	ITOF0.xy	VF30, VF30					LOI				24.5
+	ADDi.x		VF30, VF30, I				NOP
+	FTOI4.xy	VF29, VF29					NOP
+	FTOI4.xy	VF30, VF30					NOP
+
+	;	pNeedXUs[index*8 + 0] = 8 + ((8+x*2)<<4);
+	;	pNeedXUs[index*8 + 2] = (x1<<4);
+	;	pNeedXUs[index*8 + 4] = 8 + ((24+x*2)<<4);
+	;	pNeedXUs[index*8 + 6] = ((x1+16)<<4);
+
+	NOP										IADDIU			VI09, VI09, 16
+	NOP										SQI.xy			VF29, (VI05++)
+	NOP										IBNE			VI10, VI09, xloop_gen1
+	NOP										SQI.xy			VF30, (VI05++)
+
+	NOP										LQ.xy			VF01, 0(VI03)
+	NOP										LQ.xy			VF02, 1(VI03)
+	NOP										LQ.xy			VF03, 2(VI03)
+	NOP										LQ.xy			VF04, 3(VI03)
+	NOP										LQ.xy			VF05, 4(VI03)
+	NOP										LQ.xy			VF06, 5(VI03)
+	NOP										LQ.xy			VF07, 6(VI03)
+	NOP										B				genEvenCol_done
+	NOP										LQ.xy			VF08, 7(VI03)
+	
+
+genOddCol:
+	NOP										IADDIU			VI09, VI00, 0		; clear x
+	NOP										IADDIU			VI10, VI00, 64		; clear x_stop
+	NOP										IADDIU			VI08, VI00, 32		; preload constant
+	NOP										IADD			VI05, VI00, VI03	; copy dst_buf
+xloop_gen2:
+
+	NOP										IAND			VI07, VI09, VI08	;	x&0x20
+	NOP										IADD			VI07, VI07, VI07	;	<<= 1
+	NOP										ISUB			VI07, VI08, VI07	;	val = 32 - ((x&0x20)<<1)
+	NOP										IAND			VI07, VI15, VI07	;	&= uIsZBufCpy_extended
+	NOP										IADD			VI07, VI09, VI07	;	x1 = x + (val&uIsZBufCpy_extended)
+
+
+	;										VI07 contains x1 and VI09 contains x
+	NOP										IADD			VI06, VI09, VI09	;	x*2
+	NOP										MFIR.x			VF29, VI06
+	NOP										MFIR.y			VF29, VI07
+	NOP										LOI				4.5
+	ITOF0.xy	VF29, VF29					MFIR.x			VF30, VI06
+	NOP										IADDIU			VI07, VI07, 8		;	x1+16
+	ADDi.x		VF29, VF29, I				MFIR.y			VF30, VI07
+	ITOF0.xy	VF30, VF30					LOI				12.5
+	ADDi.x		VF30, VF30, I				NOP
+	FTOI4.xy	VF29, VF29					NOP
+	FTOI4.xy	VF30, VF30					NOP
+
+
+	;	pNeedXUs[index*8 + 0] = 8 + ((4+x*2)<<4);
+	;	pNeedXUs[index*8 + 2] = (x1<<4);
+	;	pNeedXUs[index*8 + 4] = 8 + ((12+x*2)<<4);
+	;	pNeedXUs[index*8 + 6] = ((x1+8)<<4);
+		
+
+	NOP										IADDIU			VI09, VI09, 8
+	NOP										SQI.xy			VF29, (VI05++)
+	NOP										IBNE			VI10, VI09, xloop_gen2
+	NOP										SQI.xy			VF30, (VI05++)
+
+	NOP										LQ.xy			VF09, 0(VI03)
+	NOP										LQ.xy			VF10, 1(VI03)
+	NOP										LQ.xy			VF11, 2(VI03)
+	NOP										LQ.xy			VF12, 3(VI03)
+	NOP										LQ.xy			VF13, 4(VI03)
+	NOP										LQ.xy			VF14, 5(VI03)
+	NOP										LQ.xy			VF15, 6(VI03)
+	NOP										LQ.xy			VF16, 7(VI03)
+	NOP										LQ.xy			VF17, 8(VI03)
+	NOP										LQ.xy			VF18, 9(VI03)
+	NOP										LQ.xy			VF19, 10(VI03)
+	NOP										LQ.xy			VF20, 11(VI03)
+	NOP										LQ.xy			VF21, 12(VI03)
+	NOP										LQ.xy			VF22, 13(VI03)
+	NOP										LQ.xy			VF23, 14(VI03)
+	NOP										B				genOddCol_done
+	NOP										LQ.xy			VF24, 15(VI03)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	
+IndexFetchInitRegs:
+	NOP										ISUBIU			VI01, VI00, 1
+	NOP										ISW.x			VI01, 2(VI00)			; Set OldFlag to -1
+	NOP										ISW.x			VI01, HALF_SZE+2(VI00)
+	NOP										ISW.y			VI00, 2(VI00)			; Set Cpy_Bool to false
+	NOP										ISW.y			VI00, HALF_SZE+2(VI00)
+
+	SUB.w		VF01, VF00, VF00			LOI				0x00000003				; eop=0 and nloop=3
+	MAXi.x		VF01, VF00, I				LOI				0x10000000				; nreg=1, FLG=0, pre=0
+	MAXi.y		VF01, VF00, I				LOI				0x0000000e				; reg=A+D
+	MAXi.z		VF01, VF00, I				IADDIU			VI02, VI00, DST_PTR		; set initial dst pointer
+
+	NOP[e]									SQ				VF01, 0(VI02)			; Set regs GifTag1
+	NOP										SQ				VF01, HALF_SZE(VI02)	; Set regs GifTag2
+InitRegsEnd:
+
+    nop nop
+    nop nop
+    
+VUIndexPass_End:
+
+
+
+;	if(FlagIn!=OLD_FLAG)
+;	{
+;		SetupCurDstBuffer(FlagIn)
+;		OLD_FLAG = FlagIn
+;		CPY_BOOL = true
+;	}
+
+;	// src_ptr <-- XTOP + pod
+
+;	for(int p=0; p<num_pages; p++)
+;	{
+;		// setup next page
+;		copy 3 quads to begDst+1 <-- *src_ptr
+;		src_ptr += 3 quads
+
+;		// kick page
+;		kick begDst
+
+;		// toggle
+;		tst_reg <-- lowDstBuf
+;		begDstOld <-- begDst
+;		beq		begDst == tst_reg
+;		begDst += 512
+;		begDst <-- lowDstBuf
+
+;		// see if dst buf 2 needs a gifstream
+;		if(CPY_BOOL)
+;		{
+;			// copy all data to next dstbuf
+;			qmemcpy(begDst+5, begDstOld+5, (8*4+8*8)*4 quads)
+
+;			CPY_BOOL = false
+;		}
+;	}

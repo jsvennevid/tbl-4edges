@@ -1,0 +1,62 @@
+        		.vu
+        		.align 4
+        		.global	ShaderSystemStub_CodeStart
+        		.global	ShaderSystemStub_CodeEnd
+
+ShaderSystemStub_CodeStart:
+
+                nop             bal  vi15, InitChunk
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+                nop             nop
+
+				nop				nop
+				nop				nop
+
+
+                nop             b ShaderSystemStub_CodeEnd2
+                nop             nop
+
+InitChunk:
+                nop             xtop    vi12
+                nop             xitop   vi14                    ; vertexCount
+                nop             ilw.x   vi11, 0(vi12)x          ; vertexOffset            
+                nop             ilw.y   vi13, 0(vi12)y          ; tempBufferOffset   
+                nop             iaddiu  vi12, vi12, 1           ; inputBuffer
+                nop             jr      vi15
+                nop             iadd    vi13, vi12, vi13        ; outputBuffer = inputBuffer + tempBufferOffset
+
+SwitchChunk:
+                nop             iaddiu  vi01, vi12, 0
+                nop             iaddiu  vi12, vi13, 0
+                nop             jr      vi15
+                nop             iaddiu  vi13, vi01, 0
+
+ShaderSystemStub_CodeEnd2:
+ShaderSystemStub_CodeEnd:
+
+                nop             nop
+                nop             nop
+
+
+                .align 4
+

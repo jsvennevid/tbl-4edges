@@ -1,0 +1,366 @@
+inline Dma::Dma()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline Dma::Dma(void* data,u32 size)
+{
+	setData(data,size);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::setData(void* data,u32 size)
+{
+	//u32 mem = u32(data);
+	//mem |= 0x30000000;
+	//data = (void*)mem;
+
+	m_data = m_tagLocation = m_currentLocation = data;
+	m_size = size;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcRefTag(void* data, u32 size,u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	((u64*) m_currentLocation)[0] = (((u64((u32)(data))) << 32) | (0x3 << 28) | size);
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcRefTag(void* data, u32 size, u32 tteLower, u32 tteUpper)
+{
+	addSrcRefTag(data,size,(u64(tteUpper)<<32)|u64(tteLower));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcNextTag(void* nextAddress, u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	((u64*) m_currentLocation)[0] = (((u64((u32)(nextAddress))) << 32) | (0x2 << 28) | 0);
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcCntTag(u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	m_tagLocation = m_currentLocation;
+	((u64*) m_currentLocation)[0] = CNT_TAG(0);
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcCntTag(u32 tteLower, u32 tteUpper)
+{
+	addSrcCntTag((u64(tteUpper)<<32)|u64(tteLower));
+}
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcEndTag(u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	m_tagLocation = m_currentLocation;
+	((u64*) m_currentLocation)[0] = END_TAG(0);
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcEndTag(u32 tteLower, u32 tteUpper)
+{
+	addSrcEndTag((u64(tteUpper)<<32)|u64(tteLower));
+}
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcCallTag(const void* data,u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	m_tagLocation = m_currentLocation;
+	((u64*) m_currentLocation)[0] = CALL_TAG((u32)data, 0);
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcCallTag(const void* data, u32 tteLower, u32 tteUpper)
+{
+	addSrcCallTag(data, (u64(tteUpper)<<32)|u64(tteLower));
+}
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcRetTag(u64 tteCode)
+{
+	DMA_SANITY_CHECK()
+	m_tagLocation = m_currentLocation;
+	((u64*) m_currentLocation)[0] = RET_TAG( 0 );
+	((u64*) m_currentLocation)[1] = tteCode;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addSrcRetTag(u32 tteLower, u32 tteUpper)
+{
+	addSrcRetTag((u64(tteUpper)<<32)|u64(tteLower));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::endPacket()
+{
+  u32 offset = ((u32) m_currentLocation) - ((u32) m_tagLocation);
+  ZENIC_ASSERT(!(((u32) m_currentLocation) & 0xf));
+
+  u32 size = (offset>>4)-1;	  // -1 to offset of the Tag
+  ((u64 *)m_tagLocation)[0] |= size;	// insert Count
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::add128(u64 value1,u64 value2)
+{
+	DMA_SANITY_CHECK()
+	((u64*) m_currentLocation)[0] = value1;
+	((u64*) m_currentLocation)[1] = value2;
+	m_currentLocation = ((u64*)m_currentLocation)+2;
+}
+ 	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::add64(u64 value)
+{
+	add32((u32)(value & 0x00000000ffffffff));
+	add32((u32)(value >> 32));
+	//DMA_SANITY_CHECK()
+	//((u64*) m_currentLocation)[0] = value;
+	//m_currentLocation = ((u64*)m_currentLocation)+1;
+}
+  
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::add32(u32 value)
+{
+	DMA_SANITY_CHECK()
+	((u32*) m_currentLocation)[0] = value;
+	m_currentLocation = ((u32*)m_currentLocation)+1;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addFloat(f32 value)
+{
+	DMA_SANITY_CHECK()
+	((f32*) m_currentLocation)[0] = value;
+	m_currentLocation = ((f32*)m_currentLocation)+1;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::add16(u16 value)
+{
+	DMA_SANITY_CHECK()
+	((u16*) m_currentLocation)[0] = value;
+	m_currentLocation = ((u16*)m_currentLocation)+1;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::add8(u8 value)
+{
+	DMA_SANITY_CHECK()
+	((u8*) m_currentLocation)[0] = value;
+	m_currentLocation = ((u8*)m_currentLocation)+1;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void* Dma::reserve(uint size)
+{
+	void* currentLocation = m_currentLocation;
+	m_currentLocation = ((u8*)m_currentLocation) + size;
+	DMA_SANITY_CHECK()
+	return currentLocation;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void* Dma::reserveEnd(uint size)
+{
+	m_size -= size;
+	DMA_SANITY_CHECK()
+	return ((u8*)m_data) + m_size;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::align(uint align)
+{
+	while((reinterpret_cast<uint>(m_currentLocation)) & align-1)
+	{
+		DMA_SANITY_CHECK()
+		add8(0);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::align32(int align, int offset)
+{
+	int p = (((int)m_currentLocation >> 2) - offset) & (align - 1);
+	if(p == 0)
+		return;
+	for(p = align - p; p > 0; p--)
+	{
+		DMA_SANITY_CHECK()
+		add32(0);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline u32 Dma::address(const void* mem)
+{
+  u32 address = u32(mem);
+  ZENIC_ASSERT_DESC(!(address & 0xf), "Trying to send non-aligned adress to dma");
+
+  if( (address & 0xf0000000) == 0x70000000 )
+		return ((address & 0x0fffffff) | 0x80000000);
+
+  if (address & 0x30000000)
+	  return address & 0x0fffffff;
+
+  return address;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::beginDirect()
+{
+	m_directRecord = static_cast<u64*>(m_currentLocation);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::endDirect()
+{
+	u32 offset = reinterpret_cast<u32>(m_currentLocation) - (u32)m_directRecord;
+	u32 size   = (offset>>4);
+	((u64*) m_directRecord)[0] = VIF_DIRECT(size); 
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::sendNormalGif(const void* data,u32 size)
+{
+#ifdef ZENIC_PS2
+	asm("sync.l");
+	*D2_MADR = address(data);
+	*D2_QWC  = size;
+	*D2_CHCR = CHCR(1,0,0,0,0,1);
+	asm __volatile__("sync.l");
+	asm __volatile__("sync.p");    
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::sendChainGif(const void* data)
+{
+#ifdef ZENIC_PS2
+	m_saveCurrent = (void*)data;
+	asm("sync.l");
+	*D2_TADR = address(data);
+	*D2_QWC  = 0;
+	*D2_CHCR = CHCR(0,1,0,0,0,1);
+	asm __volatile__("sync.l");
+	asm __volatile__("sync.p");    
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef PS2_EMU
+
+inline void Dma::sendChainVif1(const void* data)
+{
+#ifdef ZENIC_PS2
+	m_saveCurrent = (void*)data;
+	asm("sync.l");
+	*D1_TADR = address(data);
+	*D1_QWC  = 0;
+	*D1_CHCR = CHCR(1,1,0,1,0,1);
+	asm __volatile__("sync.l");
+	asm __volatile__("sync.p");    
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::sendChainVif1()
+{
+	sendChainVif1(m_data);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::sendChainGif()
+{
+	sendChainGif(m_data);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void* Dma::getData()
+{
+	return m_data;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline u32 Dma::calcSize() const
+{
+	return (u32)m_currentLocation - (u32)m_data;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void* Dma::tagLocation() const
+{
+	return m_tagLocation;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void* Dma::currentLocation() const
+{
+	return m_currentLocation;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline void Dma::addUnpack(int format, int addr, int num, int usetops,int nosign, int masking)
+{
+	add32((0x60 << 24) + (format << 24) + (masking << 28) + (usetops << 15) +
+		(nosign << 14) + (num << 16) + addr);
+}
+

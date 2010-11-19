@@ -1,0 +1,1 @@
+DevIL 1.6.7 can be found at http://sourceforge.net/projects/openil/files/

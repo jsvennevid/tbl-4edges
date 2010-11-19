@@ -1,0 +1,100 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2004 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef zenic_ps2_File_h
+#define zenic_ps2_File_h
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <Shared/Base/Types.h>
+#include <stdio.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class File
+{
+public:
+
+	enum IoMode
+	{
+		Ioman,
+		IomanX
+	};
+
+	enum Mode
+	{
+		Read,
+		Write,
+		Append
+	};
+
+	enum Location
+	{
+		Start,
+		Current,
+		End
+	};
+
+	typedef s64 Offset;
+	typedef s32 Size;
+
+	enum { InvalidSize = -1, InvalidOffset = -1 };
+
+	File();
+	~File();
+
+	bool open(const char* filename, Mode mode);
+	void close();
+
+	bool isGood() const;
+	bool isBad() const;
+	bool isEof() const;
+
+	Size read(void* buffer, Size size);
+	Size write(const void* buffer, Size size);
+
+	Offset seek(Location location, Offset offset);
+	Offset tell() const;
+
+	static void setMode(IoMode mode);
+	static IoMode ioMode() { return s_ioMode; }
+
+private:
+
+	void reset();
+
+	void setGood(bool good);
+	void setEof(bool eof);
+
+	FILE* m_file;
+	int m_handle;
+
+	bool m_good:1;
+	bool m_eof:1;
+
+	static IoMode s_ioMode;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "File.inl"
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+}
+
+#endif //zenic_ps2_File_h
+

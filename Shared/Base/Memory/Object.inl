@@ -1,0 +1,6 @@
+inline Object::Object()
+
+{
+
+}
+

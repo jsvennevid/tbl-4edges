@@ -1,0 +1,49 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2005 - 2006 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "ModelData.h"
+
+#include <Shared/Base/Serialize/SerializableVersion.h>
+#include <Shared/Base/Serialize/Serializer.h>
+#include <Shared/Graphics/Renderer/Ps2/Material.h> // TODO: FIX FIX
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+	namespace ps2
+	{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ZENIC_CREATE_SERIALIZABLE_FACTORY(zenic::ps2::ModelData, SERIALIZABLE_ID('P','S','2',' '), SERIALIZABLE_ID('M','D','A','T'));
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void ModelData::serialize(Serializer& s)
+{
+	zenic::SerializableVersion version(1, factory());
+
+	s << version;
+
+	s.descriptor(SERIALIZER_NAME("m_primaryChain")) << m_primaryChain;
+	s.descriptor(SERIALIZER_NAME("m_secondaryChain")) << m_secondaryChain;
+
+	s.descriptor(SERIALIZER_NAME("m_material")) << m_material;
+	s.descriptor(SERIALIZER_NAME("m_type")) << m_type;
+	s.descriptor(SERIALIZER_NAME("m_shaderPipeline")) << m_shaderPipeline;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	}
+}
+

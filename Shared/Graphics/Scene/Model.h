@@ -1,0 +1,78 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2005 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef zenic_Model_h
+#define zenic_Model_h
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "Node.h"
+#include <Shared/Base/Storage/Array.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+	class ModelData;
+	class BoneArray;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Model : public Node
+{
+	ZENIC_SERIALIZABLE_FACTORY;
+
+public:
+
+	Model();
+	virtual ~Model();
+
+	virtual void update(float time);
+	virtual void serialize(Serializer& s);
+
+	static void resetCollectedModelCount();
+
+	ModelData* modelData() const;
+	void setModelData(ModelData* modelData);
+
+	BoneArray* boneArray() const;
+	void setBoneArray(BoneArray* boneArray);
+
+	Model* next() const;
+	void setNext(Model* next);
+
+	static Model** collectedModels();
+	static uint collectedModelsCount();
+
+private:
+
+	ModelData* m_modelData;
+	BoneArray* m_boneArray;
+	Model* m_next;
+
+	static Model* m_collectedModels[300];
+	static Model** m_collectedModelsList;
+	static uint m_collectedModelsCount;
+};
+
+#include "Model.inl"
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+}
+
+#endif

@@ -1,0 +1,163 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2005 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef zenic_opengl_ModelData_h
+#define zenic_opengl_ModelData_h
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "../ModelData.h"
+
+#include <Shared/Base/Serialize/SerializableFactory.h>
+#include <Shared/Base/Serialize/SerializableStructure.h>
+
+// TODA: UULY UGLY .. FIX FIX!
+
+#include <Shared/Graphics/Renderer/OpenGL/Material.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+	class Node;
+
+	namespace opengl
+	{
+		class Material;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+	namespace opengl
+	{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class ModelData : public zenic::ModelData
+{
+	ZENIC_SERIALIZABLE_FACTORY;
+public:
+
+	ModelData();
+	~ModelData();
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Modeldata typ
+
+	enum Type
+	{
+		Rigid,
+		Skinned,
+		Animated,
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Polygon Types
+
+	enum
+	{
+		Triangels,
+		TriStrips,
+		Quads,
+		QuadStrips
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VertexFormat
+
+	enum
+	{
+		Postion = 1,
+		Color = 2,
+		Normals = 4,
+		Uv1 = 8,
+		Uv2 = 16,
+		Weight = 32,
+	};
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	class PolygonList
+	{
+		ZENIC_SERIALIZABLE_STRUCTURE;
+	public:
+
+		void setPolygonType(u32 polygonType);
+		void setVertexFormat(u32 vertexFormat);
+
+		void setVertexStream(const DataPtr<f32>& data);
+		void setIndexStream(const DataPtr<u32>& data);
+
+		u32 polygonType() const;
+		u32 vertexFormat() const;
+
+		DataPtr<f32>& vertexStream();
+
+	private:
+
+		u32 m_polygonType;
+		u32 m_vertexFormat;
+		DataPtr<f32> m_vertexStream;
+	};
+
+	void setMaterial(Material* material);
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	class Skin
+	{
+		ZENIC_SERIALIZABLE_STRUCTURE;
+	public:
+	
+		void setAffector(Node* node);
+		Node* affector() const;
+
+		DataPtr<f32>& weightList();
+		DataPtr<u32>& indexList();
+
+	private:
+
+		DataPtr<u32> m_indexList;
+		DataPtr<f32> m_weightList;
+		Node* m_affector;
+	};
+
+	virtual void serialize(Serializer& s);
+
+	DataPtr<PolygonList>& polygons();
+	void setPolygons(DataPtr<PolygonList>& polygonList);
+	void setType(Type type);
+	Type type() const;
+
+	Material* material();
+
+private:
+
+	u16 m_type;
+
+	DataPtr<PolygonList> m_polygons;
+	DataPtr<Skin> m_skins;
+	Material* m_material;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "ModelData.inl"
+
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endif

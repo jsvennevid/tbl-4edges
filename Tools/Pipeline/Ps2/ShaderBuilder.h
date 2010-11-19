@@ -1,0 +1,70 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// This software is supplied under the terms of a license agreement or
+// nondisclosure agreement and may not be copied or disclosed except in
+// accordance with the terms of that agreement.
+//
+// Copyright (c) 2005 Jesper Svennevid, Daniel Collin.
+// All Rights Reserved.
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef zenic_ps2_ShaderBuilder_h
+#define zenic_ps2_ShaderBuilder_h
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class CSLXSIMaterial;
+class CSLXSIShader;
+
+namespace zenic
+{
+	class String;
+
+	namespace ps2
+	{
+		class ExporterBackend;
+		class Material;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace zenic
+{
+	namespace ps2
+	{
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class ShaderBuilder
+{
+public:
+
+	static bool build(ps2::Material* material, ps2::ExporterBackend& backend, CSLXSIMaterial* xsiMaterial);
+
+private:
+
+	enum
+	{
+		SoftImageTxt2d = 0xbb42a7e2, // Softimage.txt2d-image-explicit.1
+		SoftImageConstant = 0x03f4cc45, // Softimage.material-constant.1
+		SoftImagePtBillboard = 0x26b8b5f7 // Softimage.pt_billboard.1
+	};
+
+	static void textureShader(Material* material, ExporterBackend& backend, CSLXSIShader* xsiShader);
+	static void constantShader(Material* material, ExporterBackend& backend, CSLXSIShader* xsiShader);
+	static void billboardShader(Material* material, ExporterBackend& backend, CSLXSIShader* xsiShader);
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endif
+
+
+
