@@ -3,6 +3,28 @@
 
 A PlayStation 2 Demo by The Black Lotus
 
+Full Credits:
+
+emoon:
+
+Main coding, engine coding, effects, converter tools, system coding and camera work.
+
+Chip:
+
+System coding, FFT generator, SH renderer (did not make it to the demo) and cdversion.
+
+Nico:
+
+Landscape graphics.
+
+Louie500:
+
+The rest of all graphics.
+
+Little Bitchard:
+
+Kick ass music.
+
 License
 -------
 Copyright (c) 2004-2006 Jesper Svennevid, Daniel Collin
