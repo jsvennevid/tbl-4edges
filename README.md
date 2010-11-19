@@ -25,6 +25,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+Compiling
+--------
+
+The build system in use is tundra, found at:
+https://github.com/deplinenoise/tundra
+
+When building for PlayStation 2 you also need PS2SDK, found here:
+https://github.com/ps2dev/ps2sdk
+
 Data
 ----
 The final data can be found here:
