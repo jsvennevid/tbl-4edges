@@ -35,8 +35,10 @@ SOFTWARE.
 #include <Shared/Base/Debug/Assert.h>
 #include <Shared/Graphics/Renderer/Ps2/Renderer.h>
 
+#ifndef PS2_EMU
 extern "C" u32 VUIndexPass_Begin __attribute__((section(".vudata")));
 extern "C" u32 VUIndexPass_End __attribute__((section(".vudata")));
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class
@@ -209,7 +211,9 @@ void PostEffectBuilder::uploadIndexChain(Dma& dmaChain, const void * pPhysCallCh
 		// this program must be on top so clear the cachel
 
 		Vu1::instance()->clearCache();
+#ifndef PS2_EMU
 		Vu1::instance()->getProgram(dmaChain, 1, &VUIndexPass_Begin, &VUIndexPass_End);
+#endif
 
 		// add micro program
 

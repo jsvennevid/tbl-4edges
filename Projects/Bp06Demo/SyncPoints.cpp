@@ -63,7 +63,9 @@ float SyncPoints::update(Pad& pad, MusicStream& stream, float time)
 			m_currentPart = 0;
 
 		ZENIC_INFO("Part " << m_currentPart);
+#ifndef PS2_EMU
 		return stream.setPosition(0.0f/*partStartTime()*/);
+#endif
 	}
 
 	if (buttons.r1)
@@ -72,7 +74,9 @@ float SyncPoints::update(Pad& pad, MusicStream& stream, float time)
 		{
 			++m_currentPart;
 			ZENIC_INFO("Part " << m_currentPart);
+#ifndef PS2_EMU
 			return stream.setPosition(0.0f/*partStartTime()*/);
+#endif
 		}
 	}
 

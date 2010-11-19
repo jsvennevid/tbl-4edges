@@ -433,7 +433,7 @@ int Parser::FGetVal(char *a, float *b)
     char auxi[100];
 
     if(a[0] == '0' && a[1] == 'X') {
-#ifndef WIN32
+#ifndef _WIN32
         int q = (int)strtoll(a, (char **)NULL, 16);
 #else
         int q = (int)strtol(a, (char **)NULL, 16);

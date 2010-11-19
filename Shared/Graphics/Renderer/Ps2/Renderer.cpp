@@ -1132,10 +1132,11 @@ void Renderer::renderModelAlphaDissolveEnvmap(Texture* texture, const ModelData*
 		hlp.flushRegisters();
 	}
 
+#ifndef PS2_EMU
 	s32 start = Vu1::instance()->getProgram(dmaChain, Vu1::AlphaDissolveEnvmapped, 
 											&AlphaDissolveEnvmapped_CodeStart, 
 											&AlphaDissolveEnvmapped_CodeEnd);
-
+#endif
 
 
 	m_textureSystem.addSync(dmaChain);
@@ -1160,7 +1161,9 @@ void Renderer::renderModelAlphaDissolveEnvmap(Texture* texture, const ModelData*
 	dmaChain.add32(VIF_NOP());
 	dmaChain.add32(VIF_NOP());
 	dmaChain.add32(VIF_NOP());
+#ifndef PS2_EMU
 	dmaChain.add32(VIF_MSCAL(start));
+#endif
 
 	dmaChain.align(16);
 	dmaChain.endPacket();
@@ -1234,7 +1237,9 @@ void Renderer::renderModelAlphaDissolveEnvmap(Texture* texture, const ModelData*
 	dmaChain.add32(VIF_NOP());
 	dmaChain.add32(VIF_NOP());
 	dmaChain.add32(VIF_NOP());
+#ifndef PS2_EMU
 	dmaChain.add32(VIF_MSCAL(start));
+#endif
 
 	dmaChain.align(16);
 	dmaChain.endPacket();
@@ -1333,6 +1338,7 @@ u64 Renderer::makeDisplayReg()
 
 void Renderer::screenShot(const char* filename)
 {
+#ifndef PS2_EMU
 	u32 buffer[512*4];  // max 1024*32bit for a line, should be ok
 	u32 bufferOut[512*3];
 
@@ -1397,6 +1403,7 @@ void Renderer::screenShot(const char* filename)
 	fioClose(fileHandle);
 
 	return;
+#endif
 }
 
 

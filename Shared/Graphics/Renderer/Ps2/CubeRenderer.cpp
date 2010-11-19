@@ -142,10 +142,11 @@ void CubeRenderer::begin(const Vector3& directionalLightPosition)
 
 	Vu1::instance()->clearCache();
 
+#ifndef PS2_EMU
 	m_started = Vu1::instance()->getProgram(m_dmaChain, Vu1::CubeRenderer, 
 											&CubeRendererVu1_CodeStart, 
 											&CubeRendererVu1_CodeEnd);
-
+#endif
 
 
 	m_dmaChain.addSrcCntTag(0);

@@ -3,8 +3,6 @@ local filters = {
 	{ Pattern = "[Pp]s2"; Config = "ps2-*-*-*" },
 	{ Pattern = "[Ww]in32"; Config = "win32-*-*-*" },
 	{ Pattern = "[Tt]est"; Config = "*-*-*-test" },
-	{ Pattern = "[Oo]pen[Gg][Ll]"; Config = "win32-*-*-*" },
-	{ Pattern = "[Dd][Xx]9"; Config = "win32-*-*-*" }
 }
 
 local function ZGlob(path, exts)
@@ -39,7 +37,18 @@ StaticLibrary {
 
 StaticLibrary {
 	Name = "zenic.Geometry",
-	Sources = { ZGlob("Shared/Geometry/") },
+	Sources = {
+		FGlob {
+			Dir = "Shared/Geometry/",
+			Extensions = { ".cpp" },
+			Filters = {
+				{ Pattern = "[Oo]pen[Gg][Ll]"; Config = "win32-*-*-*" },
+				{ Pattern = "[Dd][Xx]9"; Config = "win32-*-*-*" },
+				{ Pattern = ".vsm"; Config = "ps2-*-*-*" },
+				{ Pattern = "[Tt]est"; Config = "*-*-*-test" }
+			}
+		}
+	},
 	Depends = { "zenic.Base", "External.ps2sdk" }
 }
 
@@ -51,8 +60,19 @@ StaticLibrary {
 
 StaticLibrary {
 	Name = "zenic.Graphics.Renderer",
-	Sources = { ZGlob("Shared/Graphics/Renderer/", { ".cpp", ".vsm" } ) },
-	Depends = { "zenic.Base", "External.ps2sdk" }
+	Sources = {
+		FGlob {
+			Dir = "Shared/Graphics/Renderer/",
+			Extensions = { ".cpp", ".vsm" },
+			Filters = {
+				{ Pattern = "[Oo]pen[Gg][Ll]"; Config = "win32-*-*-*" },
+				{ Pattern = "[Dd][Xx]9"; Config = "win32-*-*-*" },
+				{ Pattern = ".vsm"; Config = "ps2-*-*-*" },
+				{ Pattern = "[Tt]est"; Config = "*-*-*-test" }
+			}
+		}
+	},
+	Depends = { "zenic.Base", "External.ps2sdk", "External.ps2emu" }
 }
 
 StaticLibrary {
@@ -63,7 +83,18 @@ StaticLibrary {
 
 StaticLibrary {
 	Name = "zenic.Hardware",
-	Sources = { ZGlob("Shared/Hardware/") },
+	Sources = {
+		FGlob {
+			Dir = "Shared/Hardware/",
+			Extensions = { ".cpp" },
+			Filters = {
+				{ Pattern = "[Oo]pen[Gg][Ll]"; Config = "win32-*-*-*" },
+				{ Pattern = "[Dd][Xx]9"; Config = "win32-*-*-*" },
+				{ Pattern = ".vsm"; Config = "ps2-*-*-*" },
+				{ Pattern = "[Tt]est"; Config = "*-*-*-test" }
+			}
+		}
+	},
 	Depends = { "zenic.Base", "External.ps2sdk" }
 }
 
@@ -97,6 +128,15 @@ ExternalLibrary {
 	}
 }
 
+StaticLibrary {
+	Name = "External.ps2emu",
+	Config = "win32-*-*-*",
+	
+	Sources = {
+		Glob { Dir = "Shared/External/ps2emu", Extensions = { ".cpp" } }
+	}
+}
+
 Program {
 	Name = "4edges",
 
@@ -115,7 +155,8 @@ Program {
 
 	Libs = {
 		{ "stdc++"; Config = "*-gcc-*-*" },
-		{ "c", "gcc", "debug", "kernel", "syscall", "ps2snd", "pad", "m", "fileXio"; Config = "ps2-*-*-*" }
+		{ "c", "gcc", "debug", "kernel", "syscall", "ps2snd", "pad", "m", "fileXio"; Config = "ps2-*-*-*" },
+		{ "d3d9.lib", "d3dx9.lib", "opengl32.lib", "glu32.lib", "gdi32.lib", "user32.lib"; Config = "win32-*-*-*" }
 	}
 }
 

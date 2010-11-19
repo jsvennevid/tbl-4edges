@@ -91,10 +91,11 @@ void ShRenderer::begin()
 	m_dmaChain.addSrcCntTag(0, VIF_FLUSH());
 	m_dmaChain.endPacket();
 
+#ifndef PS2_EMU
 	m_startAddress = Vu1::instance()->getProgram(m_dmaChain, Vu1::ShRenderer, 
 												 &ShRendererVu1_CodeStart, 
 												 &ShRendererVu1_CodeEnd);
-
+#endif
 	TextureSystem& textureSystem = m_renderer.textureSystem();
 
 	textureSystem.addSync(m_dmaChain);

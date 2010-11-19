@@ -29,8 +29,10 @@ SOFTWARE.
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifndef PS2_EMU
 extern "C" u32 StandardMathVu0_CodeStart __attribute__((section(".vudata")));
 extern "C" u32 StandardMathVu0_CodeEnd __attribute__((section(".vudata")));
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,10 +49,12 @@ void Vu0::setUser(User user, bool upload, bool waitFinised)
 {
 	Dma dmaChain((void*)0x70001000, 4096);
 
+#ifndef PS2_EMU
 	switch (user)
 	{
 		case StandardMath : addToChain(dmaChain, &StandardMathVu0_CodeStart, &StandardMathVu0_CodeEnd); break; 
 	}
+#endif
 
 	//dmaChain.addSrcEndTag();
 	//dmaChain.sendChainVif0();
@@ -86,8 +90,9 @@ void Vu0::addToChain(Dma& dmaChain, u32* start, u32* end)
 
 	// temp temp
 
+#ifndef PS2_EMU
 	memcpy((void*)VU0_MICRO, &StandardMathVu0_CodeStart, size * 8);
-
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,6 +104,7 @@ void Vu0::dumpOnce(const char* microMem,const char* mem)
 	if (hasDumped)
 		return;
 
+#ifndef PS2_EMU
   asm __volatile__(
     "nop\n"
     "nop\n"
@@ -106,6 +112,7 @@ void Vu0::dumpOnce(const char* microMem,const char* mem)
     "bc2t 0b\n"
     "nop\n"
     "nop\n" );
+#endif
 
 	File file;
 	File file2;
