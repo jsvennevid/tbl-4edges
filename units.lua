@@ -107,7 +107,7 @@ ExternalLibrary {
 }
 
 Program {
-	Name = "cubic",
+	Name = "4edges",
 
 	Sources = { ZGlob("Projects/Bp06Demo/") },
 
@@ -128,4 +128,4 @@ Program {
 	}
 }
 
-Default "cubic"
+Default "4edges"
