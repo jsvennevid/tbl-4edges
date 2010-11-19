@@ -32,6 +32,9 @@ typedef unsigned int uint;
 #define ZENIC_RESTRICT __restrict
 #define ALIGN(x) __attribute__((aligned(x)))
 
+#define ZENIC_PACKED __attribute__((packed))
+#define ZENIC_ALIGN(x) __attribute__((aligned(x)))
+
 #define _TAMTYPES_H_ 1
 #define TYPES_DEFINED
 

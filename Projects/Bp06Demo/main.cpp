@@ -18,13 +18,10 @@
 
 #include <Shared/Base/Io/File.h>
 #include <Shared/Base/Io/FileStream.h>
-#include <Shared/Net/DebugCommands.h>
-#include <Shared/Net/NetStream.h>
 #include <Shared/Base/Serialize/InBinarySerializer.h>
 #include <Shared/Geometry/Ps2/ModelData.h>
 #include <Shared/Graphics/Scene/Scene.h>
 #include <Shared/Graphics/Scene/AnimationController.h>
-#include <Shared/Net/Ps2/DebugServer.h>
 #include <Shared/Input/Ps2/Pad.h>
 #include <Shared/Base/Io/FileSystem.h>
 
