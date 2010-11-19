@@ -93,15 +93,6 @@ ExternalLibrary {
 			LIBPATH = {
 				"Shared/External/ps2sdk/ee/lib"
 			},
-
-
-			PROGOPTS = {
-				"-T", "Shared/External/ps2sdk/ee/startup/linkfile"
-			}
-		},
-
-		Libs = {
-			"c", "gcc", "debug", "kernel", "syscall", "ps2snd"
 		}
 	}
 }
