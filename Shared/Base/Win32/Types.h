@@ -28,6 +28,9 @@ typedef __int64 s64;
 #define ZENIC_RESTRICT __restrict
 #define ALIGN(x)
 
+#define ZENIC_PACKED // __attribute__((packed))
+#define ZENIC_ALIGN(x) //__attribute__((aligned(x)))
+
 typedef unsigned int uint;
 
 #endif

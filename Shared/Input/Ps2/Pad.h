@@ -49,7 +49,7 @@ public:
 		u8 l2;
 		u8 r2;
 		u8 unkn16[12];
-	} ButtonStatus __attribute__((packed));
+	} ButtonStatus ZENIC_PACKED;
 
 	struct Buttons
 	{
@@ -101,7 +101,7 @@ private:
 	u32 m_slot;
 	u32 m_timeout;
 
-	static char s_padBuf[256] __attribute__((aligned(64)));
+	static char s_padBuf[256] ZENIC_ALIGN(64);
 	static char s_actAlign[6];
 	static int s_actuators;
 	static bool s_modulesLoaded;

@@ -23,6 +23,8 @@
 #include <Shared/Graphics/Renderer/Ps2/Branch/Branch.h>
 #include <Shared/Graphics/Renderer/Ps2/Branch/BranchGenerator.h>
 
+#include <stdlib.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace zenic

@@ -20,6 +20,7 @@
 #include <Shared/Graphics/Renderer/Ps2/Renderer.h>
 #include <Shared/Graphics/Renderer/Ps2/CubeRenderer.h>
 #include <Shared/Graphics/Renderer/Ps2/Shaders/PostEffect/PostEffectHelper.h>
+
 #include "../PadCamera.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

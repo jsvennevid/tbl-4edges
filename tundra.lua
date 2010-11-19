@@ -1,7 +1,18 @@
-local common = {}
+local common = {
+	Env = {
+		CPPDEFS = {
+			{ "ZENIC_WIN32", "PS2_EMU"; Config = "win32-*-*-*" },
+			{ "ZENIC_PS2"; Config = "ps2-*-*-*" },
+
+			{ "ZENIC_DEBUG"; Config = "*-*-debug-*" },
+			{ "ZENIC_RELEASE"; Config = "*-*-release-*" },
+			{ "ZENIC_FINAL"; Config = "*-*-production-*" },
+		}
+	}
+}
 
 Build {
-	Units = "Shared/units.lua",
+	Units = "units.lua",
 	SyntaxExtensions = { "tundra.syntax.glob" },
 	ScriptDirs = { "Scripts" },
 	Configs = {

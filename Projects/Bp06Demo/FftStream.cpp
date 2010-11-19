@@ -11,8 +11,10 @@
 
 #include "FftStream.h"
 #include <Shared/Base/Io/Log.h>
+#if defined(ZENIC_PS2)
 #include <fileXio_rpc.h>
 #include <loadfile.h>
+#endif
 #include <Shared/Base/Io/FileSystem.h>
 #include <Shared/Graphics/Renderer/Ps2/Renderer.h>
 #include <Shared/Graphics/Renderer/Ps2/Shaders/PostEffect/PostEffectHelper.h>

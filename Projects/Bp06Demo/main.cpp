@@ -110,12 +110,14 @@ void demoMain()
 	if (!renderer)
 		return;
 
+#if defined(ZENIC_PS2)
 #ifndef ONE_PART
 #else
 	//FileSystem::instance().setIoMode(FileSystem::Host);
 #endif
 	FileSystem::instance().setIoMode(FileSystem::Hdd);
 	//FileSystem::instance().setIoMode(FileSystem::Host);
+#endif
 
 	Part* parts[14];
 
@@ -138,11 +140,13 @@ void demoMain()
 	for (uint i = 0; i < 14; ++i)
 		parts[i] = 0;
 
+#if defined(ZENIC_PS2)
 #ifndef NO_MUSIC
 	MusicStream* stream = zenic_new MusicStream("DATA/OUTPUT/SAPART1.APM");
 #else
 	MusicStream dummy;
 	MusicStream* stream = &dummy;
+#endif
 #endif
 
 #ifndef ONE_PART
@@ -218,8 +222,10 @@ void demoMain()
 
 #endif
 
+#if defined(ZENIC_PS2)
 #ifndef NO_MUSIC
 	stream->play();
+#endif
 #endif
 
 	uint prevPartId = 0;
@@ -248,14 +254,14 @@ void demoMain()
 		parts[0]->update(time, deltaTime);
 #endif
 
-#ifndef ZENIC_FINAL
+#if !defined(ZENIC_FINAL) && defined(ZENIC_PS2)
 		time = syncPoints.update(pad, *stream, time);
 #else
 		time = syncPoints.update(time);
 #endif
 
 
-#ifndef ZENIC_FINAL
+#if !defined(ZENIC_FINAL) && defined(ZENIC_PS2)
 		pad.update();
 		padCamera.update();
 
@@ -271,10 +277,12 @@ void demoMain()
 #endif
 
 #ifndef NO_MUSIC
+#if defined(ZENIC_PS2)
 		if (time > 278.0f)
 		{
 			stream->stop();
 		}
+#endif
 #endif
 
 		FftStream::instance().update(*renderer, MasterChain::instance()->chain());

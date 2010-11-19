@@ -108,6 +108,7 @@ uint SyncPoints::partId()
 
 void SyncPoints::reloadFile()
 {
+#if defined(ZENIC_PS2)
 	File::IoMode oldMode = File::ioMode();
 
 	//FileSystem& fileSystem = FileSystem::instance();
@@ -217,6 +218,7 @@ void SyncPoints::reloadFile()
 
 	stream.close();
 	File::setMode(oldMode);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
