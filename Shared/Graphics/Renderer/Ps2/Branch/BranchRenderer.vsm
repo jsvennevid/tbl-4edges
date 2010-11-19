@@ -1,0 +1,102 @@
+; =================================================
+; flowMon::Emit() vcl 1.4beta7 produced this code:
+		.vu
+		.align 4
+		.global	Render_Branch_CodeStart
+		.global	Render_Branch_CodeEnd
+Render_Branch_CodeStart:
+__v_BranchRenderer_vcl_4:
+; _LNOPT_w=[ vuta1 ] 32 [26 0] 33   [__v_BranchRenderer_vcl_4]
+         NOP                                                        lq.xyz        VF09,4(VI00)                        
+         NOP                                                        lq            VF08,0(VI00)                        
+         NOP                                                        lq            VF07,1(VI00)                        
+         NOP                                                        lq            VF04,2(VI00)                        
+         NOP                                                        lq.xyz        VF02,5(VI00)                        
+         mulax         ACC,VF08,VF09x                               lq.xyz        VF03,12(VI00)                       
+         madday        ACC,VF07,VF09y                               NOP                                               
+         maddz         VF09,VF04,VF09z                              lq.xyz        VF11,6(VI00)                        
+         mulax         ACC,VF08,VF02x                               NOP                                               
+         madday        ACC,VF07,VF02y                               NOP                                               
+         maddz         VF10,VF04,VF02z                              NOP                                               
+         mulax         ACC,VF08,VF11x                               lq.xyz        VF02,11(VI00)                       
+         madday        ACC,VF07,VF11y                               NOP                                               
+         maddz         VF11,VF04,VF11z                              NOP                                               
+         mulax         ACC,VF09,VF02x                               NOP                                                      ;	STALL_LATENCY ?1
+         madday        ACC,VF10,VF02y                               NOP                                               
+         maddz         VF02,VF11,VF02z                              lq.xyz        VF01,10(VI00)                       
+         mulax         ACC,VF09,VF03x                               lq            VF13,23(VI00)                       
+         madday        ACC,VF10,VF03y                               NOP                                               
+         maddz         VF03,VF11,VF03z                              lq.xyz        VF12,7(VI00)                        
+         mulax         ACC,VF09,VF01x                               NOP                                               
+         madday        ACC,VF10,VF01y                               sq            VF13,16(VI00)                       
+         maddz         VF01,VF11,VF01z                              lq            VF13,3(VI00)                        
+         mulax         ACC,VF08,VF12x                               lq.xyz        VF08,13(VI00)                       
+         madday        ACC,VF07,VF12y                               NOP                                               
+         maddaz        ACC,VF04,VF12z                               NOP                                               
+         maddw         VF04,VF13,VF00w                              iaddiu        VI01,VI00,0x00007fff                
+         mulax         ACC,VF09,VF08x                               iaddiu        VI01,VI01,0x00000001                
+         madday        ACC,VF10,VF08y                               lq.xyz        VF05,8(VI00)                        
+         maddaz        ACC,VF11,VF08z                               lq.xyz        VF06,9(VI00)                        
+         maddw[E]      VF04,VF04,VF00w                              isw.x         VI01,16(VI00)                       
+         NOP                                                        NOP                                               
+; _LNOPT_w=[ normal2 ] 3 [3 0] 3   [__v_BranchRenderer_vcl_5]
+         NOP                                                        iaddiu        VI02,VI00,0x0000000a                
+         NOP                                                        iaddiu        VI03,VI02,0x00007fff                
+         NOP                                                        iaddiu        VI03,VI03,0x00000001                
+nextChunk:
+; _LNOPT_w=[ normal2 ] 4 [4 0] 4   [nextChunk]
+         NOP                                                        xtop          VI05                                
+         NOP                                                        xitop         VI04                                
+         NOP                                                        iaddiu        VI06,VI05,0x000000fb                
+         NOP                                                        iaddiu        VI07,VI05,0x000000fa                
+nextSection:
+; _LNOPT_w=[ normal2 ] 4 [5 0] 5   [nextSection]
+         NOP                                                        lq            VF07,23(VI00)                       
+         NOP                                                        fcset         0                                   
+         NOP                                                        iaddiu        VI08,VI02,0                         
+         NOP                                                        sq            VF07,-1(VI06)                              ;	STALL_LATENCY ?1
+nextVertex:
+; _LNOPT_w=[ normal2 ] 20 [31 9] 31   [nextVertex]
+         NOP                                                        lqi.xyz       VF07,(VI05++)                       
+         mulax         ACC,VF01,VF07x                               isubiu        VI08,VI08,1                                ;	STALL_LATENCY ?3
+         madday        ACC,VF02,VF07y                               iaddiu        VI06,VI06,0x00000001                
+         maddaz        ACC,VF03,VF07z                               NOP                                               
+         maddw         VF07,VF04,VF00w                              NOP                                               
+         clipw.xyz     VF07xyz,VF07w                                div           Q,VF00w,VF07w                              ;	STALL_LATENCY ?3
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         mulq.xyz      VF07,VF07,Q                                  fcand         VI01,262143                         
+         NOP                                                        iaddiu        VI01,VI01,0x00007fff                
+         NOP                                                        mfir.w        VF07,VI01                           
+         mulaw.xyz     ACC,VF05,VF00w                               NOP                                               
+         madd.xyz      VF07,VF07,VF06                               NOP                                               
+         ftoi4.xyz     VF07,VF07                                    NOP                                                      ;	STALL_LATENCY ?3
+         NOP                                                        ibne          VI08,VI00,nextVertex                
+         NOP                                                        sq            VF07,-1(VI06)                              ;	STALL_LATENCY ?2
+; _LNOPT_w=[ normal2 ] 3 [3 0] 3   [__v_BranchRenderer_vcl_9]
+         NOP                                                        isw.x         VI03,0(VI07)                        
+         NOP                                                        isw.w         VI03,1(VI07)                        
+         NOP                                                        isw.w         VI03,2(VI07)                        
+; _LNOPT_w=[ normal2 ] 1 [1 0] 1   [__v_BranchRenderer_vcl_10]
+         NOP                                                        xgkick        VI07                                
+; _LNOPT_w=[ normal2 ] 4 [4 0] 4   [__v_BranchRenderer_vcl_11]
+         NOP                                                        isubiu        VI04,VI04,1                         
+         NOP                                                        iaddiu        VI07,VI06,0                         
+         NOP                                                        ibne          VI04,VI00,nextSection               
+         NOP                                                        iaddiu        VI06,VI06,0x00000001                
+; _LNOPT_w=[ normal2 ] 2 [0 0] 2   [__v_BranchRenderer_vcl_12]
+         NOP[E]                                                     NOP                                               
+         NOP                                                        NOP                                               
+; _LNOPT_w=[ normal2 ] 2 [2 0] 2   [__v_BranchRenderer_vcl_13]
+         NOP                                                        b             nextChunk                           
+         NOP                                                        NOP                                               
+		.align 4
+Render_Branch_CodeEnd:
+;	iCount=75
+; register stats:
+;   9 VU User integer
+;  14 VU User floating point

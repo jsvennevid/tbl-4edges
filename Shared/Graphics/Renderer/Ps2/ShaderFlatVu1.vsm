@@ -1,0 +1,30 @@
+; =================================================
+; flowMon::Emit() vcl 1.4beta7 produced this code:
+		.vu
+		.align 4
+		.global	ShaderFlatVu1_CodeStart
+		.global	ShaderFlatVu1_CodeEnd
+ShaderFlatVu1_CodeStart:
+shader:
+; _LNOPT_w=[ normal2 ] 3 [3 0] 3   [shader]
+         NOP                                                        iaddiu        VI01,VI13,0                         
+         NOP                                                        iaddiu        VI02,VI14,0                         
+         NOP                                                        loi           0x00000000                          
+nextVertex:
+; _LNOPT_w=[ normal2 ] 5 [9 5] 11   [nextVertex]
+         NOP                                                        lq            VF01,1(VI01)                        
+         addi.w        VF01,VF01,I                                  isubiu        VI02,VI02,1                                ;	STALL_LATENCY ?3
+         NOP                                                        sq            VF01,1(VI01)                               ;	STALL_LATENCY ?3
+         NOP                                                        ibne          VI02,VI00,nextVertex                
+         NOP                                                        iadd          VI01,VI01,VI11                      
+; _LNOPT_w=[ ] 4 [0 0] 4   [__v_ShaderFlatVu1_vcl_7]
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP[E]                                                     NOP                                               
+         NOP                                                        NOP                                               
+		.align 4
+ShaderFlatVu1_CodeEnd:
+;	iCount=12
+; register stats:
+;   6 VU User integer
+;   1 VU User floating point

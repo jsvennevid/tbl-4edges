@@ -1,0 +1,142 @@
+; =================================================
+; flowMon::Emit() vcl 1.4beta7 produced this code:
+		.vu
+		.align 4
+		.global	ShaderShellVu1_CodeStart
+		.global	ShaderShellVu1_CodeEnd
+		.global	ShaderShellStub_NextChunk
+		.global	ShaderShellStub_End
+ShaderShellVu1_CodeStart:
+__v_ShaderShell_vcl_4:
+; _LNOPT_w=[ normal2 ] 4 [2 0] 4   [__v_ShaderShell_vcl_4]
+         NOP                                                        xtop          VI01                                
+         NOP                                                        xgkick        VI01                                
+         NOP[E]                                                     NOP                                               
+         NOP                                                        NOP                                               
+; _LNOPT_w=[ vuta1 ] 33 [26 0] 37   [__v_ShaderShell_vcl_5]
+         NOP                                                        lq.xyz        VF04,4(VI00)                        
+         NOP                                                        lq            VF03,0(VI00)                        
+         NOP                                                        lq            VF02,1(VI00)                        
+         NOP                                                        lq            VF01,2(VI00)                        
+         NOP                                                        lq.xyz        VF05,5(VI00)                        
+         mulax         ACC,VF03,VF04x                               lq.xyz        VF08,10(VI00)                       
+         madday        ACC,VF02,VF04y                               NOP                                               
+         maddz         VF04,VF01,VF04z                              lq.xyz        VF06,6(VI00)                        
+         mulax         ACC,VF03,VF05x                               NOP                                               
+         madday        ACC,VF02,VF05y                               NOP                                               
+         maddz         VF05,VF01,VF05z                              NOP                                               
+         mulax         ACC,VF03,VF06x                               lq.xyz        VF07,11(VI00)                       
+         madday        ACC,VF02,VF06y                               NOP                                               
+         maddz         VF06,VF01,VF06z                              NOP                                               
+         mulax         ACC,VF04,VF07x                               NOP                                                      ;	STALL_LATENCY ?1
+         madday        ACC,VF05,VF07y                               NOP                                               
+         maddz         VF09,VF06,VF07z                              lq.xyz        VF07,12(VI00)                       
+         mulax         ACC,VF04,VF08x                               NOP                                               
+         madday        ACC,VF05,VF08y                               NOP                                               
+         maddz         VF11,VF06,VF08z                              lq.xyz        VF08,7(VI00)                        
+         mulax         ACC,VF04,VF07x                               NOP                                               
+         madday        ACC,VF05,VF07y                               sq            VF09,15(VI00)                       
+         maddz         VF10,VF06,VF07z                              lq            VF09,3(VI00)                        
+         mulax         ACC,VF03,VF08x                               lq.xyz        VF07,13(VI00)                       
+         madday        ACC,VF02,VF08y                               sq            VF11,14(VI00)                       
+         maddaz        ACC,VF01,VF08z                               NOP                                               
+         maddw         VF01,VF09,VF00w                              sq            VF10,16(VI00)                       
+         mulax         ACC,VF04,VF07x                               NOP                                               
+         madday        ACC,VF05,VF07y                               NOP                                               
+         maddaz        ACC,VF06,VF07z                               NOP                                               
+         maddw         VF04,VF01,VF00w                              NOP                                               
+         NOP[E]                                                     sq            VF04,17(VI00)                              ;	STALL_LATENCY ?3
+         NOP                                                        NOP                                               
+ShaderShellStub_NextChunk:
+ShaderShellStub_NextChunkJump:
+; _LNOPT_w=[ ] 31 [0 0] 31   [ShaderShellStub_NextChunk]
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+ShaderShellStub_End:
+; _LNOPT_w=[ normal2 ] 14 [14 0] 14   [ShaderShellStub_End]
+         NOP                                                        lq            VF01,14(VI00)                       
+         NOP                                                        lq            VF02,15(VI00)                       
+         NOP                                                        lq            VF03,16(VI00)                       
+         NOP                                                        xtop          VI02                                
+         NOP                                                        ilw.z         VI03,0(VI02)                        
+         NOP                                                        lq            VF04,17(VI00)                       
+         NOP                                                        lq.xyz        VF05,8(VI00)                        
+         NOP                                                        lq            VF08,20(VI00)                       
+         NOP                                                        iadd          VI02,VI03,VI02                      
+         NOP                                                        lq.xyz        VF06,9(VI00)                        
+         NOP                                                        fcset         0                                   
+         NOP                                                        iaddiu        VI03,VI02,0                         
+         NOP                                                        iaddiu        VI04,VI14,0                         
+         addw.z        VF07,VF00,VF00w                              sqi           VF08,(VI02++)                       
+nextVertex:
+; _LNOPT_w=[ normal2 ] 23 [31 14] 31   [nextVertex]
+         NOP                                                        lq.xyz        VF08,0(VI12)                        
+         mulax         ACC,VF01,VF08x                               lq.xy         VF07,2(VI12)                               ;	STALL_LATENCY ?3
+         madday        ACC,VF02,VF08y                               isubiu        VI04,VI04,1                         
+         maddaz        ACC,VF03,VF08z                               NOP                                               
+         maddw         VF08,VF04,VF00w                              NOP                                               
+         itof12.xy     VF07,VF07                                    NOP                                               
+         clipw.xyz     VF08xyz,VF08w                                div           Q,VF00w,VF08w                              ;	STALL_LATENCY ?2
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         NOP                                                        NOP                                               
+         mulq.xyz      VF08,VF08,Q                                  lq            VF09,1(VI12)                        
+         mulaw.xyz     ACC,VF05,VF00w                               iaddiu        VI12,VI12,0x00000003                
+         madd.xyz      VF08,VF08,VF06                               sq            VF09,1(VI02)                               ;	STALL_LATENCY ?2
+         NOP                                                        fcand         VI01,262143                         
+         mulq.xyz      VF09,VF07,Q                                  iaddiu        VI01,VI01,0x00007fff                
+         NOP                                                        mfir.w        VF08,VI01                           
+         ftoi4.xyz     VF08,VF08                                    iaddiu        VI02,VI02,0x00000003                
+         NOP                                                        sq.xyz        VF09,-3(VI02)                              ;	STALL_LATENCY ?1
+         NOP                                                        ibne          VI04,VI00,nextVertex                
+         NOP                                                        sq            VF08,-1(VI02)                       
+; _LNOPT_w=[ normal2 ] 3 [3 0] 3   [__v_ShaderShell_vcl_11]
+         NOP                                                        iaddiu        VI01,VI14,0x00007fff                
+         NOP                                                        iaddiu        VI01,VI01,0x00000001                
+         NOP                                                        isw.x         VI01,0(VI03)                        
+; _LNOPT_w=[ normal2 ] 1 [1 0] 1   [__v_ShaderShell_vcl_12]
+         NOP                                                        xgkick        VI03                                
+; _LNOPT_w=[ normal2 ] 2 [0 0] 2   [__v_ShaderShell_vcl_13]
+         NOP[E]                                                     NOP                                               
+         NOP                                                        NOP                                               
+; _LNOPT_w=[ normal2 ] 2 [2 0] 2   [__v_ShaderShell_vcl_14]
+         NOP                                                        b             ShaderShellStub_NextChunkJump       
+         NOP                                                        NOP                                               
+		.align 4
+ShaderShellVu1_CodeEnd:
+;	iCount=113
+; register stats:
+;   7 VU User integer
+;  12 VU User floating point

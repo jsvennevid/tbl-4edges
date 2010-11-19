@@ -1,0 +1,44 @@
+; =================================================
+; flowMon::Emit() vcl 1.4beta7 produced this code:
+		.vu
+		.align 4
+		.global	Vu1PrimitiveRenderer
+		.global	Vu1PrimitiveRendererEnd
+Vu1PrimitiveRenderer:
+; _LNOPT_w=[ normal2 ] 12 [12 0] 12   [Vu1PrimitiveRenderer]
+         NOP                                                        iaddiu        VI02,VI00,0x00000014                
+         NOP                                                        iaddiu        VI01,VI00,0x00000007                
+         NOP                                                        iaddiu        VI03,VI00,0x00000014                
+         NOP                                                        lq            VF05,5(VI00)                        
+         NOP                                                        lq            VF01,0(VI00)                        
+         NOP                                                        lq            VF02,1(VI00)                        
+         NOP                                                        lq            VF03,2(VI00)                        
+         NOP                                                        lq            VF04,3(VI00)                        
+         NOP                                                        sqi           VF05,(VI02++)                       
+         NOP                                                        lq            VF05,4(VI00)                        
+         NOP                                                        lq            VF06,6(VI00)                        
+         NOP                                                        iaddiu        VI04,VI00,0x00000003                
+vertexLoop:
+; _LNOPT_w=[ normal2 ] 11 [31 8] 31   [vertexLoop]
+         NOP                                                        lqi           VF07,(VI01++)                       
+         mulax         ACC,VF01,VF07x                               isubiu        VI04,VI04,1                                ;	STALL_LATENCY ?3
+         madday        ACC,VF02,VF07y                               sqi           VF06,(VI02++)                       
+         maddaz        ACC,VF03,VF07z                               NOP                                               
+         maddw         VF07,VF04,VF07w                              NOP                                               
+         mulaw         ACC,VF05,VF00w                               div           Q,VF00w,VF07w                              ;	STALL_LATENCY ?3
+         mulq.xyz      VF07,VF07,Q                                  waitq                                                    ;	STALL_LATENCY ?6
+         madd          VF07,VF07,VF05                               NOP                                                      ;	STALL_LATENCY ?3
+         ftoi4         VF07,VF07                                    NOP                                                      ;	STALL_LATENCY ?3
+         NOP                                                        ibne          VI04,VI00,vertexLoop                
+         NOP                                                        sqi           VF07,(VI02++)                              ;	STALL_LATENCY ?2
+; _LNOPT_w=[ normal2 ] 2 [1 0] 3   [__v_PrimitiveRenderer_Vcl_vcl_6]
+         NOP                                                        xgkick        VI03                                
+         NOP                                                        NOP                                               
+Vu1PrimitiveRendererEnd:
+         NOP[E]                                                     NOP                                               
+         NOP                                                        NOP                                               
+		.align 4
+;	iCount=27
+; register stats:
+;   5 VU User integer
+;   8 VU User floating point
