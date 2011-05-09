@@ -64,3 +64,10 @@ The final data can be found here:
 https://github.com/downloads/jsvennevid/tbl-4edges/the_black_lotus_-_4_edges_-_iso.zip
 
 Source data is not available for the public release.
+
+Special thanks
+--------------
+
+Sparky (Morten Mikkelsen) for the post effect help and code to move channels in
+the frame buffer (taken from sps2 for Ps2 linux)
+
