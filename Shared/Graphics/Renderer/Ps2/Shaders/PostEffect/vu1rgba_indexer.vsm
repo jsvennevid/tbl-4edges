@@ -1,4 +1,4 @@
-; VU1 micromode code by sparky
+; VU1 micromode code by sparky (Morten Mikkelsen)
 
 	.global VUIndexPass_Begin
 	.global VUIndexPass_End
