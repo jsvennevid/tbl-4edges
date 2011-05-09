@@ -97,6 +97,6 @@ Sparky (Morten Mikkelsen) for the post effect help and code to move channels in
 the frame buffer (taken from sps2 for Ps2 linux)
 
 jbit for fixing and helping out with the adpcm music playing and the
-rest of the #ps2dev people: Neov, Oobles, Tyr, Boomint, adresd, Gillian
+rest of the #ps2dev people: Neov, Oobles, Tyr, Boomint, adresd, Gillian,
 Raizor, Nagra, gorim and the rest of the crew. 
 
