@@ -26,6 +26,31 @@ Little Bitchard
 
    Kick ass music.
 
+Info
+----
+
+Hardware required: Playstation 2 compatible hardware able to boot homebrew CDs.
+
+NTSC capable display.
+
+Notice that this demo is only released as an ISO image for now as there
+are some problems streaming the music over host with ps2link. 
+
+About the code
+--------------
+
+Some general info about the code: Some parts of the code is a bit messy and the loading from
+CD is kinda slow (my fault :) / emoon) as it's done file per file on startup. Overall the code
+could be written in a way more optimized fashion but in general the (main) CPU usage is about 5% of 
+the frame time and the rest is mostly spent inside the VU1 code and on the GS. 
+
+But in the end the target of steady 60 fps was achieved.
+
+Our new version of the engine is a full rewrite (in C99 instead of C++) so the code doesn't represent
+what we actually have now.
+
+Hopefully you will find the code somewhat useful
+
 License
 -------
 Copyright (c) 2004-2006 Jesper Svennevid, Daniel Collin
@@ -70,4 +95,8 @@ Special thanks
 
 Sparky (Morten Mikkelsen) for the post effect help and code to move channels in
 the frame buffer (taken from sps2 for Ps2 linux)
+
+jbit for fixing and helping out with the adpcm music playing and the
+rest of the #ps2dev people: Neov, Oobles, Tyr, Boomint, adresd, Gillian
+Raizor, Nagra, gorim and the rest of the crew. 
 
