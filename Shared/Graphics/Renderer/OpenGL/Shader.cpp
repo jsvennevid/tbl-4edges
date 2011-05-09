@@ -22,17 +22,6 @@ SOFTWARE.
 
 */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// This software is supplied under the terms of a license agreement or
-// nondisclosure agreement and may not be copied or disclosed except in
-// accordance with the terms of that agreement.
-//
-// Copyright (c) 2005 Jesper Svennevid, Daniel Collin.
-// All Rights Reserved.
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #include "Shader.h"
 #include <Shared/Base/Serialize/Serializer.h>
 #include <Shared/Base/Serialize/SerializableVersion.h>
